@@ -5,7 +5,12 @@
 
   ==============================================================================
 */
-
+/*
+TODO
+click on window
+Drag to change pitch
+Should we play a sound
+*/
 #pragma once
 
 #include <JuceHeader.h>
@@ -52,8 +57,14 @@ public:
     //==============================================================================
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
+    juce::AudioParameterBool* playSound = nullptr;
+    juce::AudioParameterFloat* bgColor = nullptr;
+
+    static void UpdateAutomatableParameter(juce::RangedAudioParameter*, float value);
 
 private:
+    juce::AudioProcessorValueTreeState apvts;
+    juce::Random r;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PFMProject0AudioProcessor)
 };

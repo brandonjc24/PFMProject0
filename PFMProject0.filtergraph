@@ -61,16 +61,15 @@
       </OUTPUTS>
     </LAYOUT>
   </FILTER>
-  <FILTER uid="5" x="0.4828934506353861" y="0.5847076461769115">
-    <PLUGIN name="PFMProject0" format="VST3" category="Fx" manufacturer="yourcompany"
-            version="1.0.0" file="C:\Users\brand\Documents\Programming\PFM\PFMProject0\Builds\VisualStudio2019\x64\Debug\VST3\PFMProject0.vst3"
-            uid="e9559e56" isInstrument="0" fileTime="17b2109b5b8" infoUpdateTime="17b2114ed50"
-            numInputs="2" numOutputs="2" isShell="0"/>
-    <STATE>191.VMjLgXK....O+fWarAhckI2bo8la8HRLt.iHfTlai8FYo41Y8HRUTYTK3HxO9.BOVMEUy.Ea0cVZtMEcgQWY9vSRC8Vav8lak4Fc9XCLt3hKt3hKt3hKt3hYRUUSTEETIckVwTjQisVTTgkdEYjKAQjYPQSPWgUdMcjKAQjct3hdA4hKt3hKt3hKtnTUv.UQAslXuk0UXoWUFE0YQcEV77RRC8Vav8lak4Fc9vyKVMEUy.Ea0cVZtMEcgQWY9..</STATE>
+  <FILTER uid="5" x="0.4828934506353861" y="0.5847076461769115" uiLastX_Normal="351"
+          uiLastY_Normal="199" uiopen_Normal="0">
+    <PLUGIN name="PFMProject0" format="VST3" category="Instrument|Synth"
+            manufacturer="yourcompany" version="1.0.0" file="C:\Users\brand\Documents\Programming\PFM\PFMProject0\Builds\VisualStudio2019\x64\Debug\VST3\PFMProject0.vst3"
+            uid="e9559e56" isInstrument="1" fileTime="17b262a2c50" infoUpdateTime="17b262a4ab8"
+            numInputs="0" numOutputs="2" isShell="0"/>
+    <STATE>348.VMjLgLU....O+fWarAhckI2bo8la8HRLt.iHfTlai8FYo41Y8HRUTYTK3HxO9.BOVMEUy.Ea0cVZtMEcgQWY9vSRC8Vav8lak4Fc9DyM23BTYQ0TSsVago2YrU0Y2Y0XqE0ZhsVUF4hKDYlKPUjZTEDLD4RPHAkVpEDTtHEUlA0YMEiVskjLgACMFkkYLoWXxgCah4BVWgkbUcUVtPDTBQjKt3hKt3hKt3xJO4hKUAkTEQ0TtPjYt7VTF4RPtDUP1cmUXQSSvDFLzXTVPUDahcFLF4RLEYTXvTkQtDjZtDjKt3hKt3hKt3hKt3hKt3hKt3hKt3hKlIUUMQUTPkzUZESQFM1ZQQEV5UjQtDDQlAEMAcEV40zQtDDQ14hK5EjKt3hKt3hKt3hRUACTEEzZh8VVWgkdUYTTmE0UXwyKIMzasA2atUlaz4COuX0TTMCTrU2Yo41TzEFck4C.</STATE>
     <LAYOUT>
-      <INPUTS>
-        <BUS index="0" layout="L R"/>
-      </INPUTS>
+      <INPUTS/>
       <OUTPUTS>
         <BUS index="0" layout="L R"/>
       </OUTPUTS>
