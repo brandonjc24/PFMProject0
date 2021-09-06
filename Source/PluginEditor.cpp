@@ -10,12 +10,22 @@
 #include "PluginEditor.h"
 
 //==============================================================================
-PFMProject0AudioProcessorEditor::PFMProject0AudioProcessorEditor (PFMProject0AudioProcessor& p)
+PFMProject0AudioProcessorEditor::PFMProject0AudioProcessorEditor 
+    (PFMProject0AudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor (p)
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
     cachedBgColor = audioProcessor.bgColor->get();
+    PFMProject0AudioProcessor::UpdateAutomatableParameter(audioProcessor.playSound, true);
+
+    addAndMakeVisible(audioProcessor.leftBufferAnalyzer);
+    addAndMakeVisible(audioProcessor.rightBufferAnalyzer);
+
+    audioProcessor.leftBufferAnalyzer.setInterceptsMouseClicks(false, false);
+    audioProcessor.rightBufferAnalyzer.setInterceptsMouseClicks(false, false);
+
+
     setSize (400, 300);
     startTimerHz(20);
 }
@@ -54,6 +64,9 @@ void PFMProject0AudioProcessorEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
+    audioProcessor.leftBufferAnalyzer.setBounds(0, 0, getWidth(), getHeight() * 0.5);
+    audioProcessor.rightBufferAnalyzer.setBounds(0, getHeight()*0.5, getWidth(), getHeight() * 0.5);
+
 }
 
 void PFMProject0AudioProcessorEditor::mouseUp(const juce::MouseEvent &e)
@@ -61,7 +74,7 @@ void PFMProject0AudioProcessorEditor::mouseUp(const juce::MouseEvent &e)
     //audioprocessor.playsound->beginchangegesture();
     //audioprocessor.playsound->setvaluenotifyinghost( !audioprocessor.playsound->get() );
     //audioprocessor.playsound->endchangegesture();
-    //PFMProject0AudioProcessor::UpdateAutomatableParameter(audioProcessor.playSound, !audioProcessor.playSound->get() );
+    PFMProject0AudioProcessor::UpdateAutomatableParameter(audioProcessor.playSound, !audioProcessor.playSound->get() );
 }
 
 void PFMProject0AudioProcessorEditor::mouseDown(const juce::MouseEvent& e)

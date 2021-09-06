@@ -10,6 +10,11 @@
 #include "PluginEditor.h"
 
 //==============================================================================
+BufferAnalyzer::~BufferAnalyzer()
+{
+    notify();
+    stopThread(100);
+}
 void BufferAnalyzer::prepare(double sampleRate, int samplesPerBlock)
 {
     firstBuffer = true;
@@ -19,9 +24,15 @@ void BufferAnalyzer::prepare(double sampleRate, int samplesPerBlock)
     samplesCopied[0] = 0;
     samplesCopied[1] = 0;
 
+
+    fifoIndex = 0;
+    juce::zeromem(fifoBuffer, sizeof(fifoBuffer));
+    juce::zeromem(fftData, sizeof(fftData));
+    juce::zeromem(curveData, sizeof(curveData));
+
 }
 
-void BufferAnalyzer::cloneBuffer(const juce::dsp::AudioBlock<float>&other)
+void BufferAnalyzer::cloneBuffer(const juce::dsp::AudioBlock<float> &other)
 {
     auto whichIndex = firstBuffer.get();
     auto index = whichIndex ? 0 : 1;
@@ -37,6 +48,99 @@ void BufferAnalyzer::cloneBuffer(const juce::dsp::AudioBlock<float>&other)
 
     samplesCopied[index] = other.getNumSamples();
 
+    notify();
+}
+
+void BufferAnalyzer::run()
+{
+    while(true)
+    {
+        wait(-1);
+
+        DBG("BufferAnalyzer::run() awake!");
+
+        if (threadShouldExit())
+            break;
+
+        auto index = !firstBuffer.get() ? 0 : 1;
+
+        for (int i = 0; i < samplesCopied[index]; ++i)
+        {
+            pushNextSampleIntoFifo(buffers[index].getSample(0, i));
+            // get sample is slow use pointer
+        }
+    }
+}
+
+void BufferAnalyzer::pushNextSampleIntoFifo(float sample)
+{
+    if (fifoIndex == fftSize)
+    {
+        if (nextFFTBlockReady == false)
+        {
+            juce::zeromem(fftData, sizeof(fftData));
+            memcpy(fftData, fifoBuffer, sizeof(fifoBuffer));
+            nextFFTBlockReady = true;
+        }
+        fifoIndex = 0;
+    }
+    fifoBuffer[fifoIndex++] = sample;
+}
+
+void BufferAnalyzer::timerCallback()
+{
+    if (nextFFTBlockReady)
+    {
+        drawNextFrameOfSpectrum();
+        nextFFTBlockReady = false;
+        repaint();
+    }
+}
+
+void BufferAnalyzer::drawNextFrameOfSpectrum()
+{
+    // first apply a windowing function to our data
+    window.multiplyWithWindowingTable(fftData, fftSize);       // [1]
+
+    // then render our FFT data..
+    forwardFFT.performFrequencyOnlyForwardTransform(fftData);  // [2]
+
+    auto mindB = -100.0f;
+    auto maxdB = 0.0f;
+
+    for (int i = 0; i < numPoints; ++i)                         // [3]
+    {
+        auto skewedProportionX = 1.0f - std::exp(std::log(1.0f - (float)i / (float)numPoints) * 0.2f);
+        auto fftDataIndex = juce::jlimit(0, fftSize / 2, (int)(skewedProportionX * (float)fftSize * 0.5f));
+        auto level = juce::jmap(juce::jlimit(mindB, maxdB, juce::Decibels::gainToDecibels(fftData[fftDataIndex])
+            - juce::Decibels::gainToDecibels((float)fftSize)),
+            mindB, maxdB, 0.0f, 1.0f);
+
+        curveData[i] = level;                                   // [4]
+    }
+}
+
+void BufferAnalyzer::paint(juce::Graphics& g)
+{
+    float w = getWidth();
+    float h = getHeight();
+    juce::Path fftCurve;
+    fftCurve.startNewSubPath(0, juce::jmap(curveData[0], 0.f, 1.f, h, 0.f) );
+
+    for (int i = 1; i < numPoints; ++i)
+    {
+        auto data = curveData[i];
+        auto endX = juce::jmap((float)i, 0.f, float(numPoints), 0.f, w);
+        auto endY = juce::jmap(data, 0.f, 1.f, h, 0.f);
+
+        fftCurve.lineTo(endX, endY);
+
+
+    }
+
+    g.fillAll(juce::Colours::black);
+    g.setColour(juce::Colours::white);
+    g.strokePath(fftCurve, juce::PathStrokeType(1));
 }
 //==============================================================================
 PFMProject0AudioProcessor::PFMProject0AudioProcessor()
