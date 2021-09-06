@@ -19,11 +19,7 @@ Should we play a sound
 //==============================================================================
 struct BufferAnalyzer : juce::Thread, juce::Timer, juce::Component
 {
-    BufferAnalyzer() : Thread("BufferAnalyzer") 
-    { 
-        startThread();
-        startTimerHz(20);
-    }
+    BufferAnalyzer() ;
     ~BufferAnalyzer() ;
     void prepare(double sampleRate, int samplesPerBlock);
     void cloneBuffer(const juce::dsp::AudioBlock<float>& other);
@@ -33,7 +29,7 @@ struct BufferAnalyzer : juce::Thread, juce::Timer, juce::Component
 private:
     std::array<juce::AudioBuffer<float>, 2> buffers;
     juce::Atomic<bool> firstBuffer{ true };
-    std::array<size_t, 2> samplesCopied;
+    std::array<juce::Atomic<size_t>, 2> samplesCopied;
 
     enum
     {
@@ -48,13 +44,14 @@ private:
 
     void pushNextSampleIntoFifo(float);
 
-    bool nextFFTBlockReady = false;
+    juce::Atomic<bool> nextFFTBlockReady{ false };
     float curveData[numPoints];
 
     juce::dsp::FFT forwardFFT{ fftOrder };
     juce::dsp::WindowingFunction<float> window{fftSize, juce::dsp::WindowingFunction<float>::hann};
 
     void drawNextFrameOfSpectrum();
+    juce::Path fftCurve;
 };
 //==============================================================================
 /**
